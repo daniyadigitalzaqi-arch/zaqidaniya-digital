@@ -17,9 +17,9 @@
         }
     </style>
 </head>
-<body class="bg-slate-50">
+<body class="bg-slate-50 text-slate-900">
 
-    <nav class="bg-white shadow-sm sticky top-0 z-50 p-4 border-b">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 p-4">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-xl font-black text-blue-600 tracking-tighter">
                 ZAQIDANIYA<span class="text-slate-800">DIGITAL</span>
@@ -30,27 +30,22 @@
         </div>
     </nav>
 
-    <header class="hero-bg text-white py-28 px-6 text-center">
+    <header class="hero-bg text-white py-24 text-center px-6">
         <div class="container mx-auto">
             <h2 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">Solusi Keamanan & IT</h2>
             <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                Penyedia jasa instalasi CCTV dan Jaringan IT profesional. Aman, terpercaya, dan berkualitas tinggi untuk aset Anda.
+                Penyedia jasa instalasi CCTV dan Jaringan IT profesional. Aman, terpercaya, dan berkualitas tinggi.
             </p>
         </div>
     </header>
 
     <main class="container mx-auto px-6 py-16">
-        <div class="mb-12 flex flex-col md:flex-row justify-between items-center gap-6">
-            <h3 class="text-2xl font-bold border-l-4 border-blue-600 pl-4">Daftar Paket Produk</h3>
-            <div class="relative w-full md:w-80">
-                <i class="fas fa-search absolute left-4 top-3 text-slate-400"></i>
-                <input type="text" id="searchInput" placeholder="Cari paket..." 
-                    class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-600 transition text-sm">
+        <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div class="col-span-full text-center py-20 text-slate-400">
+                <i class="fas fa-spinner fa-spin fa-2x mb-4 text-blue-600"></i>
+                <p>Menghubungkan ke database Zaqidaniya Digital...</p>
             </div>
         </div>
-
-        <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            </div>
     </main>
 
     <footer class="bg-slate-900 text-white py-12 text-center">
@@ -59,20 +54,21 @@
     </footer>
 
     <script>
-        // Link CSV dari Spreadsheet Anda
+        // Link CSV yang sudah diperbaiki secara otomatis dari tautan pubhtml Anda
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTHqV0USO5tWMFRK4ZJ2f1_93_sQGiGq8gyhygC7MMwzz2aFXge9neNRIkpsPECguoW4XFa31VGBT9d/pub?gid=0&single=true&output=csv";
 
         async function loadKatalog() {
             try {
                 const response = await fetch(csvUrl);
                 const data = await response.text();
-                // Memisahkan baris, lewati baris header (baris 1)
+                
+                // Parsing CSV sederhana
                 const rows = data.split('\n').slice(1); 
                 const grid = document.getElementById('productGrid');
                 grid.innerHTML = '';
 
                 rows.forEach(row => {
-                    // Penanganan koma di dalam tanda kutip (CSV standard)
+                    // Regex untuk memisahkan kolom dengan benar meskipun ada koma di dalam teks
                     const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
                     const clean = cols.map(c => c.replace(/^"|"$/g, '').trim());
 
@@ -84,10 +80,10 @@
                         const waLink = clean[4];    // Kolom E
                         
                         const card = `
-                            <div class="product-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-xl transition-all duration-300">
-                                <div class="h-48 overflow-hidden bg-slate-200">
-                                    <img src="${gambar}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500" 
-                                        onerror="this.src='https://via.placeholder.com/400x300?text=ZAQIDANIYA+DIGITAL'">
+                            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-xl transition-all duration-300">
+                                <div class="h-48 overflow-hidden bg-slate-200 relative">
+                                    <img src="${gambar}" class="w-full h-full object-cover" 
+                                        onerror="this.src='https://via.placeholder.com/400x300?text=Produk+Zaqidaniya'">
                                 </div>
                                 <div class="p-6 flex-grow flex flex-col">
                                     <h4 class="font-bold text-slate-800 text-lg mb-2">${nama}</h4>
@@ -104,21 +100,12 @@
                         grid.innerHTML += card;
                     }
                 });
-                document.getElementById('status').innerText = "Data Terupdate";
+                document.getElementById('status').innerText = "Data Terkoneksi";
             } catch (error) {
-                document.getElementById('status').innerText = "Koneksi Gagal";
+                document.getElementById('status').innerText = "Gagal Sinkronisasi";
+                console.error("Error:", error);
             }
         }
-
-        // Fitur Pencarian
-        document.getElementById('searchInput').addEventListener('keyup', function(e) {
-            const val = e.target.value.toLowerCase();
-            const cards = document.querySelectorAll('.product-card');
-            cards.forEach(card => {
-                const text = card.innerText.toLowerCase();
-                card.style.display = text.includes(val) ? 'flex' : 'none';
-            });
-        });
 
         loadKatalog();
     </script>
